@@ -4,18 +4,64 @@ const qs = require("querystring");
 const users = require("./users");
 const MongoClient = require("mongodb").MongoClient;
 const uri = process.env.MONGODB_URL;
+const assert = require("assert");
 const client = new MongoClient(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
-// const date = new Date();
 
 /*
  *  Send ticket creation confirmation via
  *  chat.postMessage to the user who created it
  */
 const sendConfirmation = points => {
-    if (parseInt(points.number) <= 50 && true) {
+    if (parseInt(points.number) <= 50) {
+        // Log the bonus points in the database
+        client.connect(err => {
+            var pointObject = {
+                team: points.team,
+                points: parseInt(points.number, 10),
+                description: points.description,
+                committee: points.userEmail,
+                timestamp: new Date(Date.now())
+            };
+            const BonusPointCollection = client
+                .db(process.env.EVENT_NAME)
+                .collection("BonusPoints");
+            BonusPointCollection.aggregate(
+                [
+                    {
+                        $match: {
+                            // committee: points.userEmail,
+                            // team: points.team
+                            committee: "kyle@mchacks.ca",
+                            team: "Science 2"
+                        }
+                    },
+                    {
+                        $group: {
+                            _id: "$team",
+                            totalPoints: {
+                                $sum: "$points"
+                            }
+                        }
+                    }
+                ],
+                function(err, cursor) {
+                    assert.equal(err, null);
+
+                    cursor.toArray(function(err, documents) {
+                        console.log(documents[0].totalPoints);
+                    });
+                }
+            );
+
+            BonusPointCollection.insertOne(pointObject, function(err, res) {
+                if (err) throw err;
+                console.log("1 document inserted");
+            });
+            client.close();
+        });
         // Post the confirmation message in the slack channel.
         axios
             .post(
@@ -55,24 +101,6 @@ const sendConfirmation = points => {
                 debug("sendConfirmation error: %o", err);
                 console.error(err);
             });
-        // Log the bonus points in the database
-        client.connect(err => {
-            var pointObject = {
-                team: points.team,
-                points: parseInt(points.number, 10),
-                description: points.description,
-                committee: points.userEmail,
-                timestamp: new Date(Date.now()).toISOString()
-            };
-            const BonusPointCollection = client
-                .db(process.env.EVENT_NAME)
-                .collection("BonusPoints");
-            BonusPointCollection.insertOne(pointObject, function(err, res) {
-                if (err) throw err;
-                console.log("1 document inserted");
-            });
-            client.close();
-        });
     } else {
         axios
             .post(
