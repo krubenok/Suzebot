@@ -1,67 +1,57 @@
-# Suzebot
+# Slash Command and Dialogs blueprint
 
-Assist in management of McGill Events
+> :sparkles: *Updated October 2018: As we have introduced some new features, this tutorial and the code samples have been updated! All the changes from the previous version of this example, read the DIFF.md*
 
-This bot has been created using [Bot Framework](https://dev.botframework.com), it shows how to create a simple bot that accepts input from the user and echoes it back.
+## Creating a helpdesk ticket using a Slash Command and a Dialog
 
-## Prerequisites
+Use a slash command and a dialog to create a helpdesk ticket in a 3rd-party system. Once it has been created, send a message to the user with information about their ticket.
 
-- [Node.js](https://nodejs.org) version 10.14.1 or higher
+![helpdesk-dialog](https://user-images.githubusercontent.com/700173/30929774-5fe9f0e2-a374-11e7-958e-0d8c362f89a3.gif)
 
-    ```bash
-    # determine node version
-    node --version
-    ```
+## Setup
 
-## To run the bot
+### Create a Slack app
 
-- Install modules
+1. Create an app at [https://api.slack.com/apps](https://api.slack.com/apps)
+2. Add a Slash command (See *Add a Slash Command* section below)
+3. Navigate to **Bot Users** and click "Add a Bot User" to create one.
+4. Enable Interactive components (See *Enable Interactive Components* below)
+5. Navigate to the **OAuth & Permissions** page and make sure the following scopes are pre-selected:
+    * `commands`
+    * `bot`
+6. Click 'Save Changes' and install the app (You should get an OAuth access token after the installation)
 
-    ```bash
-    npm install
-    ```
-- Start the bot
+#### Add a Slash Command
+1. Go back to the app settings and click on Slash Commands.
+1. Click the 'Create New Command' button and fill in the following:
+    * Command: `/helpdesk`
+    * Request URL: Your server or Glitch URL + `/command`
+    * Short description: `Create a helpdesk ticket`
+    * Usage hint: `[the problem you're having]`
 
-    ```bash
-    npm start
-    ```
+If you did "Remix" on Glitch, it auto-generate a new URL with two random words, so your Request URL should be like: `https://fancy-feast.glitch.me/command`. 
 
-## Testing the bot using Bot Framework Emulator
 
-[Bot Framework Emulator](https://github.com/microsoft/botframework-emulator) is a desktop application that allows bot developers to test and debug their bots on localhost or running remotely through a tunnel.
+#### Enable Interactive Components
+1. Go back to the app settings and click on Interactive Components.
+1. Set the Request URL to your server or Glitch URL + `/interactive`.
+1. Save the change.
 
-- Install the Bot Framework Emulator version 4.3.0 or greater from [here](https://github.com/Microsoft/BotFramework-Emulator/releases)
 
-### Connect to the bot using Bot Framework Emulator
+### Set Your Credentials
 
-- Launch Bot Framework Emulator
-- File -> Open Bot
-- Enter a Bot URL of `http://localhost:3978/api/messages`
+1. Set the following environment variables to `.env` (see `.env.sample`):
+    * `SLACK_ACCESS_TOKEN`: Your bot token, `xoxb-` (available on the **OAuth & Permissions** once you install the app)
+    * `SLACK_SIGNING_SECRET`: Your app's Signing Secret (available on the **Basic Information** page)
+2. If you're running the app locally, run the app (`npm start`). Or if you're using Glitch, it automatically starts the app.
 
-## Deploy the bot to Azure
+#### Run the app 
 
-### Publishing Changes to Azure Bot Service
+1. Get the code
+    * Clone this repo and run `npm install`
+2. Set the following environment variables to `.env` (see `.env.sample`):
+    * `SLACK_ACCESS_TOKEN`: Your bot token, `xoxb-` (available on the **OAuth & Permissions** once you install the app)
+    * `SLACK_SIGNING_SECRET`: Your app's Signing Secret (available on the **Basic Information** page)
+3. If you're running the app locally, run the app (`npm start`).
 
-    ```bash
-    # build the TypeScript bot before you publish
-    npm run build
-    ```
-
-To learn more about deploying a bot to Azure, see [Deploy your bot to Azure](https://aka.ms/azuredeployment) for a complete list of deployment instructions.
-
-## Further reading
-
-- [Bot Framework Documentation](https://docs.botframework.com)
-- [Bot Basics](https://docs.microsoft.com/azure/bot-service/bot-builder-basics?view=azure-bot-service-4.0)
-- [Dialogs](https://docs.microsoft.com/en-us/azure/bot-service/bot-builder-concept-dialog?view=azure-bot-service-4.0)
-- [Gathering Input Using Prompts](https://docs.microsoft.com/en-us/azure/bot-service/bot-builder-prompts?view=azure-bot-service-4.0)
-- [Activity processing](https://docs.microsoft.com/en-us/azure/bot-service/bot-builder-concept-activity-processing?view=azure-bot-service-4.0)
-- [Azure Bot Service Introduction](https://docs.microsoft.com/azure/bot-service/bot-service-overview-introduction?view=azure-bot-service-4.0)
-- [Azure Bot Service Documentation](https://docs.microsoft.com/azure/bot-service/?view=azure-bot-service-4.0)
-- [Azure CLI](https://docs.microsoft.com/cli/azure/?view=azure-cli-latest)
-- [Azure Portal](https://portal.azure.com)
-- [Language Understanding using LUIS](https://docs.microsoft.com/en-us/azure/cognitive-services/luis/)
-- [Channels and Bot Connector Service](https://docs.microsoft.com/en-us/azure/bot-service/bot-concepts?view=azure-bot-service-4.0)
-- [TypeScript](https://www.typescriptlang.org)
-- [Restify](https://www.npmjs.com/package/restify)
-- [dotenv](https://www.npmjs.com/package/dotenv)
+If you want to run it locally, I recommend creating a localhost tunnel with [ngrok](https://ngrok.com)!

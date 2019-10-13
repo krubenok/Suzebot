@@ -1,0 +1,36 @@
+[
+  {
+    "label": "Science",
+    "options": [
+      {
+        "label": "Science 1:",
+        "value": "Science 1"
+      },
+      {
+        "label": "Science 2",
+        "value": "Science 2"
+      },
+      {
+        "label": "Science 3",
+        "value": "Science 3"
+      }
+    ]
+  },
+  {
+    "label": "Engineering",
+    "options": [
+      {
+        "label": "Engineering 1",
+        "value": "Engineering 1"
+      },
+      {
+        "label": "Engineering 2",
+        "value": "Engineering 2"
+      },
+      {
+        "label": "Engineering 3",
+        "value": "Engineering 3"
+      }
+    ]
+  }
+]

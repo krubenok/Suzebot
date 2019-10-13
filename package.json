@@ -1,33 +1,27 @@
 {
-    "name": "suzebot",
-    "version": "1.0.0",
-    "description": "Assist in management of McGill Events",
-    "author": "Generated using Microsoft Bot Builder Yeoman generator v4.5.0",
-    "license": "MIT",
-    "main": "./lib/index.js",
-    "scripts": {
-        "build": "tsc --build",
-        "lint": "tslint -c tslint.json 'src/**/*.ts'",
-        "postinstall": "npm run build && node ./deploymentScripts/webConfigPrep.js",
-        "start": "tsc --build && node ./lib/index.js",
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "watch": "nodemon --watch ./src -e ts --exec \"npm run start\""
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com"
-    },
-    "dependencies": {
-        "botbuilder": "~4.5.1",
-        "dotenv": "~8.0.0",
-        "replace": "~1.1.0",
-        "restify": "~8.3.3"
-    },
-    "devDependencies": {
-        "@types/dotenv": "6.1.1",
-        "@types/restify": "7.2.12",
-        "nodemon": "~1.19.1",
-        "tslint": "~5.18.0",
-        "typescript": "~3.5.3"
-    }
+  "name": "slash-command-blueprint",
+  "private": true,
+  "version": "1.5.0",
+  "description": "Sample Slack app that responds to an Slack slash command with an interactive message",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "DEBUG=slash-command-template node src/index.js"
+  },
+  "authors": [
+    "Sachin Ranchod <sranchod@slack-corp.com>",
+    "Tomomi Imura <timura@slack-corp.com>"
+  ],
+  "engines": {
+    "node": ">=4.2.0",
+    "npm": ">=2.14.7"
+  },
+  "dependencies": {
+    "axios": "^0.18.1",
+    "body-parser": "^1.17.1",
+    "debug": "^3.1.0",
+    "dotenv": "^4.0.0",
+    "express": "^4.15.2",
+    "jshint": "^2.10.2",
+    "tsscmp": "^1.0.6"
+  }
 }
