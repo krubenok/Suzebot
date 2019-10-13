@@ -32,10 +32,8 @@ const sendConfirmation = points => {
                 [
                     {
                         $match: {
-                            // committee: points.userEmail,
-                            // team: points.team
-                            committee: "kyle@mchacks.ca",
-                            team: "Science 2"
+                            committee: points.userEmail,
+                            team: points.team
                         }
                     },
                     {
@@ -49,58 +47,199 @@ const sendConfirmation = points => {
                 ],
                 function(err, cursor) {
                     assert.equal(err, null);
-
                     cursor.toArray(function(err, documents) {
-                        console.log(documents[0].totalPoints);
+                        try {
+                            // console.log(documents[0].totalPoints);
+                            if (
+                                typeof documents[0] === "undefined" ||
+                                documents[0].totalPoints <= 50 - points.number
+                            ) {
+                                BonusPointCollection.aggregate(
+                                    [
+                                        {
+                                            $match: {
+                                                committee: points.userEmail
+                                            }
+                                        },
+                                        {
+                                            $group: {
+                                                _id: "$committee",
+                                                totalPoints: {
+                                                    $sum: "$points"
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    function(err, cursor) {
+                                        assert.equal(err, null);
+                                        cursor.toArray(function(
+                                            err,
+                                            documents
+                                        ) {
+                                            try {
+                                                // console.log(
+                                                //     documents[0].totalPoints
+                                                // );
+                                                if (
+                                                    typeof documents[0] ===
+                                                        "undefined" ||
+                                                    documents[0].totalPoints <=
+                                                        200 - points.number
+                                                ) {
+                                                    BonusPointCollection.insertOne(
+                                                        pointObject,
+                                                        function(err, res) {
+                                                            if (err) throw err;
+                                                            console.log(
+                                                                "1 document inserted"
+                                                            );
+                                                        }
+                                                    );
+                                                    client.close();
+                                                    // Post the confirmation message in the slack channel.
+                                                    axios
+                                                        .post(
+                                                            "https://slack.com/api/chat.postMessage",
+                                                            qs.stringify({
+                                                                token:
+                                                                    process.env
+                                                                        .SLACK_ACCESS_TOKEN,
+                                                                channel:
+                                                                    process.env
+                                                                        .SLACK_POINTS_CHANNEL,
+                                                                // as_user: false,
+                                                                text:
+                                                                    "Points submitted!",
+                                                                attachments: JSON.stringify(
+                                                                    [
+                                                                        {
+                                                                            title: `Points submitted by ${points.userEmail}`,
+                                                                            text:
+                                                                                points.text,
+                                                                            fields: [
+                                                                                {
+                                                                                    title:
+                                                                                        "Team Name",
+                                                                                    value:
+                                                                                        points.team,
+                                                                                    short: true
+                                                                                },
+                                                                                {
+                                                                                    title:
+                                                                                        "Number",
+                                                                                    value:
+                                                                                        points.number
+                                                                                },
+                                                                                {
+                                                                                    title:
+                                                                                        "Description",
+                                                                                    value:
+                                                                                        points.description ||
+                                                                                        "None provided"
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                )
+                                                            })
+                                                        )
+                                                        .then(result => {
+                                                            debug(
+                                                                "sendConfirmation: %o",
+                                                                result.data
+                                                            );
+                                                        })
+                                                        .catch(err => {
+                                                            debug(
+                                                                "sendConfirmation error: %o",
+                                                                err
+                                                            );
+                                                            console.error(err);
+                                                        });
+                                                } else {
+                                                    {
+                                                        axios
+                                                            .post(
+                                                                "https://slack.com/api/chat.postMessage",
+                                                                qs.stringify({
+                                                                    token:
+                                                                        process
+                                                                            .env
+                                                                            .SLACK_ACCESS_TOKEN,
+                                                                    channel:
+                                                                        process
+                                                                            .env
+                                                                            .SLACK_POINTS_CHANNEL,
+                                                                    text:
+                                                                        "Error Submitting Points! You've already give out your daily maximum points!.",
+                                                                    response_type:
+                                                                        "ephemeral"
+                                                                })
+                                                            )
+                                                            .then(result => {
+                                                                debug(
+                                                                    "sendConfirmation: %o",
+                                                                    result.data
+                                                                );
+                                                            })
+                                                            .catch(err => {
+                                                                debug(
+                                                                    "sendConfirmation error: %o",
+                                                                    err
+                                                                );
+                                                                console.error(
+                                                                    err
+                                                                );
+                                                            });
+                                                    }
+                                                }
+                                            } catch (error) {
+                                                console.error("No points yet.");
+                                                console.error(error);
+                                            }
+                                        });
+                                    }
+                                );
+                            } else {
+                                {
+                                    axios
+                                        .post(
+                                            "https://slack.com/api/chat.postMessage",
+                                            qs.stringify({
+                                                token:
+                                                    process.env
+                                                        .SLACK_ACCESS_TOKEN,
+                                                channel:
+                                                    process.env
+                                                        .SLACK_POINTS_CHANNEL,
+                                                text:
+                                                    "Error Submitting Points! You've already given this team the maximum allowed points for the day.",
+                                                response_type: "ephemeral"
+                                            })
+                                        )
+                                        .then(result => {
+                                            debug(
+                                                "sendConfirmation: %o",
+                                                result.data
+                                            );
+                                        })
+                                        .catch(err => {
+                                            debug(
+                                                "sendConfirmation error: %o",
+                                                err
+                                            );
+                                            console.error(err);
+                                        });
+                                }
+                            }
+                        } catch (error) {
+                            console.error("No points yet.");
+                            console.error(error);
+                        }
                     });
                 }
             );
-
-            BonusPointCollection.insertOne(pointObject, function(err, res) {
-                if (err) throw err;
-                console.log("1 document inserted");
-            });
-            client.close();
         });
-        // Post the confirmation message in the slack channel.
-        axios
-            .post(
-                "https://slack.com/api/chat.postMessage",
-                qs.stringify({
-                    token: process.env.SLACK_ACCESS_TOKEN,
-                    channel: process.env.SLACK_POINTS_CHANNEL,
-                    // as_user: false,
-                    text: "Points submitted!",
-                    attachments: JSON.stringify([
-                        {
-                            title: `Points submitted by ${points.userEmail}`,
-                            text: points.text,
-                            fields: [
-                                {
-                                    title: "Team Name",
-                                    value: points.team,
-                                    short: true
-                                },
-                                {
-                                    title: "Number",
-                                    value: points.number
-                                },
-                                {
-                                    title: "Description",
-                                    value: points.description || "None provided"
-                                }
-                            ]
-                        }
-                    ])
-                })
-            )
-            .then(result => {
-                debug("sendConfirmation: %o", result.data);
-            })
-            .catch(err => {
-                debug("sendConfirmation error: %o", err);
-                console.error(err);
-            });
     } else {
         axios
             .post(
