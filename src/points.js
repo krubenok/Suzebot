@@ -15,6 +15,7 @@ const client = new MongoClient(uri, {
  *  chat.postMessage to the user who created it
  */
 const sendConfirmation = points => {
+    var today = new Date();
     if (parseInt(points.number) <= 50) {
         // Log the bonus points in the database
         client.connect(err => {
@@ -33,7 +34,17 @@ const sendConfirmation = points => {
                     {
                         $match: {
                             committee: points.userEmail,
-                            team: points.team
+                            team: points.team,
+                            timestamp: {
+                                $gte: new Date(
+                                    today.getFullYear(),
+                                    today.getMonth(),
+                                    today.getDate() - 1,
+                                    10,
+                                    0,
+                                    0
+                                )
+                            }
                         }
                     },
                     {
@@ -49,7 +60,6 @@ const sendConfirmation = points => {
                     assert.equal(err, null);
                     cursor.toArray(function(err, documents) {
                         try {
-                            // console.log(documents[0].totalPoints);
                             if (
                                 typeof documents[0] === "undefined" ||
                                 documents[0].totalPoints <= 50 - points.number
@@ -58,7 +68,17 @@ const sendConfirmation = points => {
                                     [
                                         {
                                             $match: {
-                                                committee: points.userEmail
+                                                committee: points.userEmail,
+                                                timestamp: {
+                                                    $gte: new Date(
+                                                        today.getFullYear(),
+                                                        today.getMonth(),
+                                                        today.getDate() - 1,
+                                                        10,
+                                                        0,
+                                                        0
+                                                    )
+                                                }
                                             }
                                         },
                                         {
@@ -77,9 +97,6 @@ const sendConfirmation = points => {
                                             documents
                                         ) {
                                             try {
-                                                // console.log(
-                                                //     documents[0].totalPoints
-                                                // );
                                                 if (
                                                     typeof documents[0] ===
                                                         "undefined" ||
