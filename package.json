@@ -1,28 +1,32 @@
 {
-  "name": "slash-command-blueprint",
-  "private": true,
-  "version": "1.5.0",
-  "description": "Sample Slack app that responds to an Slack slash command with an interactive message",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "DEBUG=slash-command-template node src/index.js"
-  },
-  "authors": [
-    "Sachin Ranchod <sranchod@slack-corp.com>",
-    "Tomomi Imura <timura@slack-corp.com>"
-  ],
-  "engines": {
-    "node": ">=4.2.0",
-    "npm": ">=2.14.7"
-  },
-  "dependencies": {
-    "axios": "^0.18.1",
-    "body-parser": "^1.17.1",
-    "debug": "^3.1.0",
-    "dotenv": "^4.0.0",
-    "express": "^4.15.2",
-    "jshint": "^2.10.2",
-    "mongodb": "^3.3.2",
-    "tsscmp": "^1.0.6"
-  }
+    "name": "bolt-starter",
+    "version": "0.0.1",
+    "description": "Bolt app starter",
+    "main": "index.js",
+    "scripts": {
+        "local": "node_modules/.bin/nodemon index.js",
+        "start": "node index.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:seratch/bolt-starter.git"
+    },
+    "keywords": [
+        "Slack",
+        "Bolt"
+    ],
+    "author": "@seratch",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/seratch/bolt-starter/issues"
+    },
+    "homepage": "https://github.com/seratch/bolt-starter#readme",
+    "dependencies": {
+        "@slack/bolt": "^1.7.0",
+        "dotenv": "^8.2.0",
+        "mongodb": "^3.5.4"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.1"
+    }
 }
