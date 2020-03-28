@@ -1,4 +1,12 @@
-# Getting started with Bolt ⚡️
+# Suzebot
+
+Suzebot is a Slackbot based on [Slack's Bolt⚡️](https://slack.dev/bolt/) to process and record Bonus Points for McGill MODODE's. See below for instructions on how to deploy this application from the template used to create this application. 
+
+## Point Rules
+
+Users are allowed to submit points if they have submitted fewer than 50 points to any one team in a day or if they have submitted fewer than 150 points in general that day. This logic can be changed by adapting the Mongo Query.
+
+# Deployment
 
 This is a simple [Slack's Bolt⚡️](https://slack.dev/bolt/) app template. This README covers the following ways to start building your awesome Slack apps.
 
